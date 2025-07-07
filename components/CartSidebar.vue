@@ -12,7 +12,7 @@
         </button>
       </div>
 
-      <!-- Cart Content -->
+      <!-- Cart Content --->
       <div class="cart-content">
         <!-- Empty Cart State -->
         <div v-if="!cartStore.hasItems" class="empty-cart">
