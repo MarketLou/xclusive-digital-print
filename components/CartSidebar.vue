@@ -12,7 +12,7 @@
         </button>
       </div>
 
-      <!-- Cart Content --->
+      <!-- Cart Content -->
       <div class="cart-content">
         <!-- Empty Cart State -->
         <div v-if="!cartStore.hasItems" class="empty-cart">
@@ -24,7 +24,7 @@
           </button>
         </div>
 
-        <!-- Cart with Items -->
+        <!-- Cart With Items -->
         <div v-else class="cart-with-items">
           <!-- Progress Steps -->
           <div class="progress-steps">
