@@ -15,7 +15,7 @@
       </div>
         <div class="hero-content">
         <div class="hero-container">
-          <h1 class="hero-title">Precision Digital Printing for Your Brand and Vision</h1>
+          <h1 class="hero-title">Precision Digital Printing</h1>
           <div class="hero-cta">
             <NuxtLink to="/contact" class="btn btn-primary">Get Your Custom Quote</NuxtLink>
           </div>
