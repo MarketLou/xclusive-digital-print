@@ -3,7 +3,7 @@
     <!-- Navigation -->
     <Navigation />
     
-    <!-- Hero Section --->
+    <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-background">
         <img 
