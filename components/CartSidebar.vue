@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useCartStore } from '~/store/cart'
 import CartItems from '~/components/cart/CartItems.vue'
 import CustomerInfo from '~/components/cart/CustomerInfo.vue'

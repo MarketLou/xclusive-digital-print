@@ -3,9 +3,9 @@
     <!-- Navigation -->
     <Navigation />
     
-    <!-- Fixed Cart Icon Button (floating) -->
+    <!-- Fixed Cart Toggle Button -->
     <button 
-      class="cart-icon-btn" 
+      class="cart-toggle-btn" 
       @click="cartStore.toggleCart()"
       :class="{ 'has-items': cartStore.itemCount > 0 }"
     >
@@ -29,21 +29,58 @@
 
     <!-- Main Shop Content -->
     <div class="shop-container">
-      <!-- SINGLE 2-COLUMN LAYOUT - No cart panel -->
-      <div class="shop-layout-single">
+      <div class="shop-layout">
         <!-- Left Column - Category Sidebar -->
         <div class="sidebar-column">
           <CategorySidebar @category-selected="handleCategorySelection" />
         </div>
 
-        <!-- Right Column - Product Display (wider now) -->
-        <div class="products-column-wide">
+        <!-- Middle Column - Product Display -->
+        <div class="products-column">
           <ProductDisplay :selected-category-id="selectedCategoryId" />
+        </div>
+
+        <!-- Right Column - Cart Panel (Desktop Only) -->
+        <div 
+          class="cart-column" 
+          :class="{ 'cart-open': cartStore.isCartOpen }"
+        >
+          <div class="cart-panel">
+            <div class="cart-header">
+              <h3>Shopping Cart</h3>
+              <button class="close-cart-btn" @click="cartStore.toggleCart()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <div class="cart-content">
+              <div v-if="cartStore.itemCount === 0" class="empty-cart">
+                <p>Your cart is empty</p>
+                <p class="empty-cart-subtext">Add some products to get started!</p>
+              </div>
+              <div v-else class="cart-items-container">
+                <CartItems />
+                <div class="cart-actions">
+                  <div class="cart-total">
+                    <strong>Total: {{ formatPrice(cartStore.total) }}</strong>
+                  </div>
+                  <button 
+                    class="checkout-btn"
+                    @click="cartStore.openCheckout()"
+                    :disabled="cartStore.itemCount === 0"
+                  >
+                    Proceed to Checkout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Cart Sidebar (the ONLY cart implementation) -->
+    <!-- Mobile/Overlay Cart Sidebar -->
     <CartSidebar />
   </div>
 </template>
@@ -65,6 +102,12 @@ const selectedCategoryId = ref(null)
 const handleCategorySelection = (categoryId) => {
   selectedCategoryId.value = categoryId
   console.log('Category selected:', categoryId)
+}
+
+// Helper function to format price
+const formatPrice = (amount) => {
+  if (!amount && amount !== 0) return '$0.00'
+  return `$${(amount / 100).toFixed(2)}`
 }
 
 // Initialize cart on page load
@@ -126,9 +169,9 @@ onMounted(async () => {
   padding: 2rem 1rem;
 }
 
-.shop-layout-single {
+.shop-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 300px 1fr 350px;
   gap: 2rem;
   min-height: 600px;
 }
@@ -139,17 +182,118 @@ onMounted(async () => {
   top: 2rem;
 }
 
-.products-column-wide {
+.products-column {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   min-height: 600px;
-  /* Wider now that cart panel is removed */
 }
 
-/* Fixed Cart Icon Button */
-.cart-icon-btn {
+.cart-column {
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+  transition: all 0.3s ease;
+}
+
+.cart-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  background: #161D2D;
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.close-cart-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.close-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cart-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.empty-cart {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.empty-cart-subtext {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.cart-items-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cart-actions {
+  padding: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  background: white;
+}
+
+.cart-total {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #161D2D;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #161D2D;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-btn:hover:not(:disabled) {
+  background: #2a3441;
+}
+
+.checkout-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Fixed Cart Toggle Button */
+.cart-toggle-btn {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -160,7 +304,7 @@ onMounted(async () => {
   border-radius: 50%;
   color: white;
   cursor: pointer;
-  display: flex;
+  display: none; /* Hidden on desktop, shown on mobile */
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -168,17 +312,17 @@ onMounted(async () => {
   z-index: 999;
 }
 
-.cart-icon-btn:hover {
+.cart-toggle-btn:hover {
   background: #2a3441;
   transform: scale(1.05);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
 }
 
-.cart-icon-btn.has-items {
+.cart-toggle-btn.has-items {
   background: #004dff;
 }
 
-.cart-icon-btn.has-items:hover {
+.cart-toggle-btn.has-items:hover {
   background: #0040d9;
 }
 
@@ -201,14 +345,22 @@ onMounted(async () => {
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .shop-layout-single {
-    grid-template-columns: 280px 1fr;
+  .shop-layout {
+    grid-template-columns: 280px 1fr 320px;
   }
 }
 
 @media (max-width: 1024px) {
-  .shop-layout-single {
+  .shop-layout {
     grid-template-columns: 250px 1fr;
+  }
+  
+  .cart-column {
+    display: none; /* Hide desktop cart on tablet */
+  }
+  
+  .cart-toggle-btn {
+    display: flex; /* Show mobile cart button */
   }
 }
 
@@ -225,7 +377,7 @@ onMounted(async () => {
     padding: 1rem;
   }
 
-  .shop-layout-single {
+  .shop-layout {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
@@ -235,12 +387,12 @@ onMounted(async () => {
     order: 2;
   }
 
-  .products-column-wide {
+  .products-column {
     padding: 1rem;
     order: 1;
   }
 
-  .cart-icon-btn {
+  .cart-toggle-btn {
     width: 50px;
     height: 50px;
     top: 15px;
@@ -267,7 +419,7 @@ onMounted(async () => {
     padding: 0.5rem;
   }
 
-  .products-column-wide {
+  .products-column {
     padding: 1rem;
     border-radius: 4px;
   }
